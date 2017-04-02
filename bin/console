@@ -21,11 +21,7 @@ $debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(['--no-d
 
 if ($debug) {
     Debug::enable();
-    try {
-        (new Symfony\Component\Dotenv\Dotenv())->load(__DIR__.'/../.env');
-    } catch (Symfony\Component\Dotenv\Exception\PathException $e) {
-        //
-    }
+	app\dotenv_load();
 }
 
 $kernel = new AppKernel($env, $debug);

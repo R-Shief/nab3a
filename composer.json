@@ -9,6 +9,9 @@
         "classmap": [
             "app/AppKernel.php",
             "app/AppCache.php"
+        ],
+        "files": [
+            "app/functions.php"
         ]
     },
     "autoload-dev": {
