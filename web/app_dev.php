@@ -21,6 +21,11 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../app/autoload.php';
 Debug::enable();
+try {
+    (new Symfony\Component\Dotenv\Dotenv())->load(__DIR__.'/../.env');
+} catch (Symfony\Component\Dotenv\Exception\PathException $e) {
+    //
+}
 
 $kernel = new AppKernel('dev', true);
 $kernel->loadClassCache();
