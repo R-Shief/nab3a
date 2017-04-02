@@ -5,10 +5,11 @@ parameters:
 
 services:
     console.application:
-        class: Symfony\Component\Console\Application
+        class: AppBundle\Console\Application
         arguments:
             - 'nab3a'
-            - '@@package_version@'
+            - "@=parameter('kernel.environment') ~ (parameter('kernel.debug') ? '/debug' : '')"
+
         calls:
             - [ setDispatcher, [ '@event_dispatcher' ] ]
 
