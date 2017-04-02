@@ -13,6 +13,7 @@ class AppKernel extends Kernel
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Symfony\Bundle\MonologBundle\MonologBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new ConsulBundle\ConsulBundle(),
             new AppBundle\AppBundle(),
         ];
 
@@ -26,7 +27,28 @@ class AppKernel extends Kernel
         return $bundles;
     }
 
-    public function getRootDir()
+    public function boot()
+	{
+		if (true === $this->booted) {
+			return;
+		}
+
+		$manager = (new \DL\ConsulPhpEnvVar\Builder\ConsulEnvManagerBuilder())
+			->withOverwriteEvenIfDefined(true)
+			->build();
+
+		$mappings = [
+			'TWITTER_CONSUMER_KEY' => 'twitter/consumer_key',
+			'TWITTER_CONSUMER_SECRET' => 'twitter/consumer_secret',
+			'TWITTER_ACCESS_TOKEN' => 'twitter/1/access_token',
+			'TWITTER_ACCESS_TOKEN_SECRET' => 'twitter/1/access_token_secret',
+		];
+
+		$manager->getEnvVarsFromConsul($mappings);
+		return parent::boot();
+	}
+
+	public function getRootDir()
     {
         return __DIR__;
     }
@@ -43,6 +65,6 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+		$loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
     }
 }

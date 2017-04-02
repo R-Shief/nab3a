@@ -21,6 +21,12 @@
     },
     "require": {
         "php": ">=5.5.9",
+        "bangpound/consul-bundle": "^0.0.1",
+        "clue/json-stream": "^0.1.0",
+        "dlapps/consul-php-envvar": "^1.1",
+        "guzzlehttp/oauth-subscriber": "^0.3.0",
+        "mkraemer/react-pcntl": "^2.2",
+        "react/child-process": "^0.4.3",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "symfony/monolog-bundle": "^3.0.2",
