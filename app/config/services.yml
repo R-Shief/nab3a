@@ -4,6 +4,28 @@ parameters:
 #    parameter_name: value
 
 services:
+    console.application:
+        class: Symfony\Component\Console\Application
+        arguments:
+            - 'nab3a'
+            - '@@package_version@'
+        calls:
+            - [ setDispatcher, [ '@event_dispatcher' ] ]
+
+    console.input:
+        class: Symfony\Component\Console\Input\ArgvInput
+
+    console.output:
+        class: Symfony\Component\Console\Output\ConsoleOutput
+
+    console.command:
+        abstract: true
+        calls:
+            - [ setContainer, ['@service_container'] ]
+            - [ setLogger, [ '@?logger' ] ]
+        tags:
+            - { name: monolog.logger }
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
