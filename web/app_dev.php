@@ -22,6 +22,7 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 $loader = require __DIR__.'/../app/autoload.php';
 app\debug();
 app\dotenv_load();
+app\consul_load(include __DIR__.'/../app/config/consul_mapping.php');
 
 $kernel = new AppKernel('dev', true);
 $kernel->loadClassCache();

@@ -2,6 +2,7 @@
 
 namespace app {
 
+	use DL\ConsulPhpEnvVar\Builder\ConsulEnvManagerBuilder;
 	use Symfony\Component\Console\Input\ArgvInput;
 	use Symfony\Component\Debug\Debug;
     use Symfony\Component\Dotenv\Dotenv;
@@ -38,6 +39,7 @@ namespace app {
 		if ($debug) {
 			debug();
 			dotenv_load();
+			consul_load(include __DIR__.'/config/consul_mapping.php');
 		}
 
         $kernel = new \AppKernel($env, $debug);
@@ -47,5 +49,17 @@ namespace app {
         $application = $container->get('console.application');
 
         return $application->run($container->get('console.input'), $container->get('console.output'));
+    }
+
+    /**
+     * @param array $mappings
+     */
+    function consul_load(array $mappings = array())
+    {
+        $manager = (new ConsulEnvManagerBuilder())
+            ->withOverwriteEvenIfDefined(true)
+            ->build();
+
+        $manager->getEnvVarsFromConsul($mappings);
     }
 }

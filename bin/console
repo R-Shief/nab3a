@@ -22,6 +22,7 @@ $debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(['--no-d
 if ($debug) {
     app\debug();
 	app\dotenv_load();
+	app\consul_load(include __DIR__.'/../app/config/consul_mapping.php');
 }
 
 $kernel = new AppKernel($env, $debug);
