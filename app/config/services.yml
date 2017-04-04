@@ -27,6 +27,145 @@ services:
         tags:
             - { name: monolog.logger }
 
+    nab3a.twitter.guzzle.client:
+        class: GuzzleHttp\Client
+        arguments:
+            -
+                base_uri: https://stream.twitter.com/1.1/
+                auth: oauth
+                decode_content: 'deflate, gzip'
+                stream: true
+                on_stats: [ '@nab3a.guzzle.emitter', 'onStats' ]
+                on_headers: [ '@nab3a.guzzle.emitter', 'onHeaders' ]
+
+    nab3a.twitter.guzzle.middleware.oauth:
+        class: GuzzleHttp\Subscriber\Oauth\Oauth1
+        arguments:
+            -
+                consumer_key:    '%env(TWITTER_CONSUMER_KEY)%'
+                consumer_secret: '%env(TWITTER_CONSUMER_SECRET)%'
+                token:           '%env(TWITTER_ACCESS_TOKEN)%'
+                token_secret:    '%env(TWITTER_ACCESS_TOKEN_SECRET)%'
+        tags:
+            - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: oauth }
+
+    pipe_command:
+        class: AppBundle\Command\PipeCommand
+        parent: console.command
+        tags:
+            - { name: nab3a.console.command }
+
+    read_stream_command:
+        class: AppBundle\Command\ReadStreamCommand
+        parent: console.command
+        tags:
+            - { name: nab3a.console.command }
+
+    nab3a.guzzle.emitter:
+        class: AppBundle\Guzzle\Emitter
+        calls:
+            - [ setLogger, [ '@?logger']]
+        tags:
+            - { name: monolog.logger, channel: guzzle }
+        public: false
+
+    nab3a.event_loop:
+        class: React\EventLoop\LoopInterface
+        factory: ['React\EventLoop\Factory','create']
+
+    nab3a.pcntl:
+        class: MKraemer\ReactPCNTL\PCNTL
+        arguments:
+            - '@nab3a.event_loop'
+
+    nab3a.process.child_process:
+        class: AppBundle\Process\ChildProcess
+        arguments:
+            - '@nab3a.event_loop'
+
+    nab3a.console.logger_helper:
+        class: AppBundle\Console\LoggerHelper
+        arguments: ['@=service(''console.output'').getErrorOutput()']
+        calls:
+            - [ setContainer, ['@service_container'] ]
+
+    nab3a.twitter.message_emitter:
+        class: AppBundle\Twitter\MessageEmitter
+        arguments: ['@nab3a.twitter.type_guesser']
+
+    nab3a.twitter.type_guesser:
+        class: AppBundle\Twitter\TypeGuesser
+        public: false
+
+    guzzle_handler:
+        class: GuzzleHttp\HandlerStack
+        factory: ['GuzzleHttp\HandlerStack', 'create']
+        calls:
+            - [ 'remove', ['http_errors']]
+            - [ 'remove', ['allow_redirects']]
+            - [ 'remove', ['cookies']]
+#            - [ 'remove', ['prepare_body']]
+
+    nab3a.guzzle.client:
+        class: GuzzleHttp\Client
+        public: false
+        arguments:
+            -
+                on_stats: [ '@nab3a.guzzle.emitter', 'onStats' ]
+                on_headers: [ '@nab3a.guzzle.emitter', 'onHeaders' ]
+
+    nab3a.guzzle.handler_stack:
+        class: GuzzleHttp\HandlerStack
+        public: false
+        shared: false
+
+    nab3a.guzzle.client.handler:
+        class: GuzzleHttp\HandlerStack
+        factory: ['@nab3a.guzzle.client', 'getConfig']
+        arguments: ['handler']
+
+    nab3a.guzzle.middleware.log:
+        class: Closure
+        factory: [ GuzzleHttp\Middleware, log ]
+        arguments: [ '@?logger', '@nab3a.guzzle.middleware.log.formatter' ]
+        tags:
+            - { name: monolog.logger, channel: guzzle }
+            - { name: guzzle.middleware, client: nab3a.guzzle.client, middleware_name: log, after: retry }
+            - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: log, after: retry }
+        public: false
+        shared: false
+
+    nab3a.guzzle.middleware.log.formatter:
+        class: GuzzleHttp\MessageFormatter
+        arguments: [ '@=constant(''GuzzleHttp\\MessageFormatter::CLF'')' ]
+        public: false
+
+    nab3a.guzzle.middleware.retry:
+        class: Closure
+        public: false
+        shared: false
+        factory: [ AppBundle\Guzzle\RetryMiddleware, retry ]
+
+    nab3a.twitter.guzzle.middleware.retry:
+        parent: nab3a.guzzle.middleware.retry
+        tags:
+            - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: retry }
+
+    nab3a.logger.handler:
+        class: Symfony\Bridge\Monolog\Handler\ConsoleHandler
+        calls:
+            - [ setFormatter, [ '@=service(''console.input'').hasParameterOption(''--child'') ? service(''nab3a.logger.formatter.json'') : service(''nab3a.logger.formatter.console'')'] ]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    nab3a.logger.formatter.console:
+        class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
+
+    nab3a.logger.formatter.json:
+        parent: monolog.formatter.loggly
+        arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
+        public: true
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

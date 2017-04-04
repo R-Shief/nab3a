@@ -14,31 +14,31 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
  */
 class AddConsoleCommandPass implements CompilerPassInterface
 {
-	/**
-	 * @var string
-	 */
-	private $applicationServiceId;
+    /**
+     * @var string
+     */
+    private $applicationServiceId;
 
-	/**
-	 * @var string
-	 */
+    /**
+     * @var string
+     */
     private $namePrefix;
 
-	/**
-	 * AddConsoleCommandPass constructor.
-	 * @param string $namePrefix
-	 * @param string $applicationServiceId
-	 */
+    /**
+     * AddConsoleCommandPass constructor.
+     * @param string $namePrefix
+     * @param string $applicationServiceId
+     */
     public function __construct($namePrefix = 'app', $applicationServiceId = 'console.application')
     {
         $this->namePrefix = $namePrefix;
         $this->applicationServiceId = $applicationServiceId;
     }
 
-	/**
-	 * @param ContainerBuilder $container
-	 * @throws InvalidArgumentException
-	 */
+    /**
+     * @param ContainerBuilder $container
+     * @throws InvalidArgumentException
+     */
     public function process(ContainerBuilder $container)
     {
         $applicationDefinition = $container->getDefinition($this->applicationServiceId);
