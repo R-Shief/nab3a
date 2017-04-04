@@ -124,6 +124,33 @@ services:
         factory: ['@nab3a.guzzle.client', 'getConfig']
         arguments: ['handler']
 
+    nab3a.guzzle.middleware.log:
+        class: Closure
+        factory: [ GuzzleHttp\Middleware, log ]
+        arguments: [ '@?logger', '@nab3a.guzzle.middleware.log.formatter' ]
+        tags:
+            - { name: monolog.logger, channel: guzzle }
+            - { name: guzzle.middleware, client: nab3a.guzzle.client, middleware_name: log, after: retry }
+            - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: log, after: retry }
+        public: false
+        shared: false
+
+    nab3a.guzzle.middleware.log.formatter:
+        class: GuzzleHttp\MessageFormatter
+        arguments: [ '@=constant(''GuzzleHttp\\MessageFormatter::CLF'')' ]
+        public: false
+
+    nab3a.guzzle.middleware.retry:
+        class: Closure
+        public: false
+        shared: false
+        factory: [ AppBundle\Guzzle\RetryMiddleware, retry ]
+
+    nab3a.twitter.guzzle.middleware.retry:
+        parent: nab3a.guzzle.middleware.retry
+        tags:
+            - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: retry }
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
