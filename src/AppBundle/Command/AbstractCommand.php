@@ -30,17 +30,17 @@ abstract class AbstractCommand extends Command
 
     public function initialize(InputInterface $input, OutputInterface $output)
     {
-		$request = $input->getArgument('request');
-    	if (!$request) {
-    		return;
-		}
+        $request = $input->getArgument('request');
+        if (!$request) {
+            return;
+        }
 
         $kv = $this->container->get('consul.kv');
 
-		// Using raw=true means we get the object without base64 encoding.
-		$result = $kv->get($request, array('raw' => true));
-		$response = $result->json();
+        // Using raw=true means we get the object without base64 encoding.
+        $result = $kv->get($request, array('raw' => true));
+        $response = $result->json();
 
-		$this->request = new Request($response['method'], $response['uri'], $response['headers'], $response['body'], $response['version']);
+        $this->request = new Request($response['method'], $response['uri'], $response['headers'], $response['body'], $response['version']);
     }
 }

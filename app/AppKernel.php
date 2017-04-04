@@ -27,7 +27,7 @@ class AppKernel extends Kernel
         return $bundles;
     }
 
-	public function getRootDir()
+    public function getRootDir()
     {
         return __DIR__;
     }
@@ -44,6 +44,6 @@ class AppKernel extends Kernel
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-		$loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
     }
 }
