@@ -54,13 +54,26 @@ class PipeCommand extends AbstractCommand
         // but it still stupidly allows these situations to arise.
         // $timer = $watcher->watch($resource);
 
-//        $stringOption = implode(' ', array_map(function ($option) {
-//            return '--stream '. $option;
-//        }, $input->getOption('stream')));
-//
+		switch ($output->getVerbosity()) {
+			case OutputInterface::VERBOSITY_QUIET:
+				$verbosity = '--quiet';
+				break;
+			case OutputInterface::VERBOSITY_VERBOSE:
+				$verbosity = '--verbosity';
+				break;
+			case OutputInterface::VERBOSITY_VERY_VERBOSE:
+				$verbosity = '--verbosity=2';
+				break;
+ 			case OutputInterface::VERBOSITY_DEBUG:
+				$verbosity = '--verbosity=3';
+				break;
+			default:
+				$verbosity = '';
+		}
+
         $process = $this->container
           ->get('nab3a.process.child_process')
-          ->makeChildProcess('stream:read:twitter '. $input->getArgument('request'));
+          ->makeChildProcess('stream:read:twitter '.$input->getArgument('request').' '.$verbosity);
 
         $this->attachListeners($process);
 

@@ -151,6 +151,21 @@ services:
         tags:
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: retry }
 
+    nab3a.logger.handler:
+        class: Symfony\Bridge\Monolog\Handler\ConsoleHandler
+        calls:
+            - [ setFormatter, [ '@=service(''console.input'').hasParameterOption(''--child'') ? service(''nab3a.logger.formatter.json'') : service(''nab3a.logger.formatter.console'')'] ]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    nab3a.logger.formatter.console:
+        class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
+
+    nab3a.logger.formatter.json:
+        parent: monolog.formatter.loggly
+        arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
+        public: true
+
 #    service_name:
 #        class: AppBundle\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
