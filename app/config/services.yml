@@ -4,6 +4,33 @@ parameters:
 #    parameter_name: value
 
 services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, form types, etc.
+        autoconfigure: false
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: true
+
+    # loads services from whatever directories you want (you can add directories!)
+    # this creates a service per class whose id is the fully-qualified class name
+    AppBundle\:
+        resource: '../../src/AppBundle/{Form,EventSubscriber,Twig,Security}'
+
+    AppBundle\Command\:
+        resource: '../../src/AppBundle/Command/{PipeCommand.php,ReadStreamCommand.php}'
+        calls:
+            - [ setContainer, ['@service_container'] ]
+            - [ setLogger, [ '@?logger' ] ]
+        tags: ['nab3a.console.command','monolog.logger']
+
+    AppBundle\Controller\:
+        resource: '../../src/AppBundle/Controller'
+        public: true
+        tags: ['controller.service_arguments']
+
     console.application:
         class: AppBundle\Console\Application
         arguments:
@@ -18,14 +45,6 @@ services:
 
     console.output:
         class: Symfony\Component\Console\Output\ConsoleOutput
-
-    console.command:
-        abstract: true
-        calls:
-            - [ setContainer, ['@service_container'] ]
-            - [ setLogger, [ '@?logger' ] ]
-        tags:
-            - { name: monolog.logger }
 
     nab3a.twitter.guzzle.client:
         class: GuzzleHttp\Client
@@ -48,18 +67,6 @@ services:
                 token_secret:    '%env(TWITTER_ACCESS_TOKEN_SECRET)%'
         tags:
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: oauth }
-
-    pipe_command:
-        class: AppBundle\Command\PipeCommand
-        parent: console.command
-        tags:
-            - { name: nab3a.console.command }
-
-    read_stream_command:
-        class: AppBundle\Command\ReadStreamCommand
-        parent: console.command
-        tags:
-            - { name: nab3a.console.command }
 
     nab3a.guzzle.emitter:
         class: AppBundle\Guzzle\Emitter
@@ -147,7 +154,10 @@ services:
         factory: [ AppBundle\Guzzle\RetryMiddleware, retry ]
 
     nab3a.twitter.guzzle.middleware.retry:
-        parent: nab3a.guzzle.middleware.retry
+        class: Closure
+        public: false
+        shared: false
+        factory: [ AppBundle\Guzzle\RetryMiddleware, retry ]
         tags:
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: retry }
 
@@ -162,7 +172,7 @@ services:
         class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
 
     nab3a.logger.formatter.json:
-        parent: monolog.formatter.loggly
+        class: Monolog\Formatter\LogglyFormatter
         arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
         public: true
 

@@ -1,3 +1,4 @@
+/.web-server-pid
 /.env
 /build/
 /phpunit.xml

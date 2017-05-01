@@ -4,7 +4,7 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "AppBundle\\": "src/AppBundle"
         },
         "classmap": [
             "app/AppKernel.php",
@@ -17,11 +17,14 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php"
+        ]
     },
     "require": {
         "php": ">=5.5.9",
-        "bangpound/consul-bundle": "^0.0.1",
+        "bangpound/consul-bundle": "^0.0.2",
         "clue/json-stream": "^0.1.0",
         "dlapps/consul-php-envvar": "^1.1",
         "guzzlehttp/oauth-subscriber": "^0.3.0",
@@ -29,13 +32,12 @@
         "react/child-process": "^0.4.3",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
-        "symfony/monolog-bundle": "^3.0.2",
+        "symfony/monolog-bundle": "^3.1.0",
         "symfony/polyfill-apcu": "^1.0",
-        "symfony/symfony": "3.2.*"
+        "symfony/symfony": "^3.3@beta"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
-        "symfony/dotenv": "3.3.x-dev",
         "symfony/phpunit-bridge": "^3.0"
     },
     "scripts": {

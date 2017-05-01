@@ -10,7 +10,7 @@ parameters:
 framework:
     #esi:             ~
     #translator:      { fallbacks: ["%locale%"] }
-    secret:          "%secret%"
+    secret:          "%env(SYMFONY__SECRET)%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
@@ -22,7 +22,6 @@ framework:
         engines: ['twig']
     default_locale:  "%locale%"
     trusted_hosts:   ~
-    trusted_proxies: ~
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
         handler_id:  session.handler.native_file
@@ -32,6 +31,7 @@ framework:
     assets: ~
     php_errors:
         log: true
+    ide: 'phpstorm://open?url=file://%%f&line=%%l'
 
 # Twig Configuration
 twig:
