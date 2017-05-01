@@ -21,8 +21,8 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../vendor/autoload.php';
 app\debug();
-app\dotenv_load();
-app\consul_load(include __DIR__.'/../app/config/consul_mapping.php');
+app\dotenvLoad();
+app\consulLoad(include __DIR__.'/../app/config/consul_mapping.php');
 
 $kernel = new AppKernel('dev', true);
 if (PHP_VERSION_ID < 70000) {
