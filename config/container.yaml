@@ -141,6 +141,16 @@ services:
         arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
         public: true
 
+    nab3a.twitter.message_emitter.plugin.rabbitmq:
+        class: App\RabbitMq\EnqueueTweetPlugin
+        arguments:
+            - '@old_sound_rabbit_mq.twitter_producer'
+            - ''
+            - { content_type: 'application/json' }
+        public: false
+        tags:
+            - { name: evenement.plugin, id: App\Twitter\MessageEmitter }
+
 #    service_name:
 #        class: App\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]

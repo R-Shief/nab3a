@@ -3,10 +3,12 @@
 namespace App;
 
 use App\DependencyInjection\Compiler\AddConsoleCommandPass;
+use App\DependencyInjection\Compiler\AttachPluginsCompilerPass;
 use App\DependencyInjection\Compiler\StackMiddlewareCompilerPass;
 use DL\ConsulPhpEnvVar\Builder\ConsulEnvManagerBuilder;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
@@ -81,5 +83,6 @@ final class Kernel extends BaseKernel
     {
         $container->addCompilerPass(new StackMiddlewareCompilerPass());
         $container->addCompilerPass(new AddConsoleCommandPass('nab3a'));
+        $container->addCompilerPass(new AttachPluginsCompilerPass(Evenement\Configurator::class, 'evenement.plugin'), PassConfig::TYPE_BEFORE_REMOVING);
     }
 }
