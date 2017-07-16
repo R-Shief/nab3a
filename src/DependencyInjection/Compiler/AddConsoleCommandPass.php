@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 /**
  * Class AddConsoleCommandPass.
  *
- * @see \Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleCommandPass
+ * @see \Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass
  */
 class AddConsoleCommandPass implements CompilerPassInterface
 {
