@@ -3,6 +3,8 @@
 parameters:
 
 services:
+    Symfony\Component\Console\Input\ArgvInput: ~
+    Symfony\Component\Console\Output\ConsoleOutput: ~
     Clue\JsonStream\StreamingJsonParser:
         shared: false
 
@@ -13,20 +15,13 @@ services:
             - [ setLogger, [ '@?logger' ] ]
         tags: ['nab3a.console.command','monolog.logger']
 
-    console.application:
-        class: App\Console\Application
+    App\Console\Application:
         arguments:
             - 'nab3a'
             - "@=parameter('kernel.environment') ~ (parameter('kernel.debug') ? '/debug' : '')"
 
         calls:
             - [ setDispatcher, [ '@event_dispatcher' ] ]
-
-    console.input:
-        class: Symfony\Component\Console\Input\ArgvInput
-
-    console.output:
-        class: Symfony\Component\Console\Output\ConsoleOutput
 
     nab3a.twitter.guzzle.client:
         class: GuzzleHttp\Client
@@ -74,7 +69,7 @@ services:
 
     nab3a.console.logger_helper:
         class: App\Console\LoggerHelper
-        arguments: ['@=service(''console.output'').getErrorOutput()']
+        arguments: ['@=service(''Symfony\\Component\\Console\\Output\\ConsoleOutput'').getErrorOutput()']
         calls:
             - [ setContainer, ['@service_container'] ]
 
@@ -138,7 +133,7 @@ services:
     nab3a.logger.handler:
         class: Symfony\Bridge\Monolog\Handler\ConsoleHandler
         calls:
-            - [ setFormatter, [ '@=service(''console.input'').hasParameterOption(''--child'') ? service(''nab3a.logger.formatter.json'') : service(''nab3a.logger.formatter.console'')'] ]
+            - [ setFormatter, [ '@=service(''Symfony\\Component\\Console\\Input\\ArgvInput'').hasParameterOption(''--child'') ? service(''nab3a.logger.formatter.json'') : service(''nab3a.logger.formatter.console'')'] ]
         tags:
             - { name: kernel.event_subscriber }
 

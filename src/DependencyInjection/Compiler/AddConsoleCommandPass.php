@@ -2,6 +2,7 @@
 
 namespace App\DependencyInjection\Compiler;
 
+use App\Console\Application;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -29,7 +30,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
      * @param string $namePrefix
      * @param string $applicationServiceId
      */
-    public function __construct($namePrefix = 'app', $applicationServiceId = 'console.application')
+    public function __construct($namePrefix = 'app', $applicationServiceId = Application::class)
     {
         $this->namePrefix = $namePrefix;
         $this->applicationServiceId = $applicationServiceId;

@@ -3,6 +3,7 @@
 
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
@@ -32,9 +33,9 @@ $kernel = new Kernel($env, $debug);
 $kernel->boot();
 $container = $kernel->getContainer();
 $kernel->shutdown();
-$application = $container->get('console.application');
+$application = $container->get(App\Console\Application::class);
 
 exit($application->run(
-    $container->get('console.input'),
-    $container->get('console.output')
+    $container->get(ArgvInput::class),
+    $container->get(ConsoleOutput::class)
 ));
