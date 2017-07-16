@@ -1,0 +1,66 @@
+<?php
+
+namespace App\DependencyInjection\Compiler;
+
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+
+/**
+ * Class AddConsoleCommandPass.
+ *
+ * @see \Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleCommandPass
+ */
+class AddConsoleCommandPass implements CompilerPassInterface
+{
+    /**
+     * @var string
+     */
+    private $applicationServiceId;
+
+    /**
+     * @var string
+     */
+    private $namePrefix;
+
+    /**
+     * AddConsoleCommandPass constructor.
+     * @param string $namePrefix
+     * @param string $applicationServiceId
+     */
+    public function __construct($namePrefix = 'app', $applicationServiceId = 'console.application')
+    {
+        $this->namePrefix = $namePrefix;
+        $this->applicationServiceId = $applicationServiceId;
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @throws InvalidArgumentException
+     */
+    public function process(ContainerBuilder $container)
+    {
+        $applicationDefinition = $container->getDefinition($this->applicationServiceId);
+        $commandServices = $container->findTaggedServiceIds($this->namePrefix .'.console.command');
+
+        foreach ($commandServices as $id => $tags) {
+            $definition = $container->getDefinition($id);
+
+            if (!$definition->isPublic()) {
+                throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s.console.command" must be public.', $id, $this->namePrefix));
+            }
+
+            if ($definition->isAbstract()) {
+                throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s.console.command" must not be abstract.', $id, $this->namePrefix));
+            }
+
+            $class = $container->getParameterBag()->resolveValue($definition->getClass());
+            if (!is_subclass_of($class, 'Symfony\\Component\\Console\\Command\\Command')) {
+                throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s.console.command" must be a subclass of "Symfony\\Component\\Console\\Command\\Command".', $id, $this->namePrefix));
+            }
+
+            $applicationDefinition->addMethodCall('add', [new Reference($id)]);
+        }
+    }
+}
