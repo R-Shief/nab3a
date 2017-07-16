@@ -3,7 +3,7 @@
 namespace App;
 
 use App\DependencyInjection\Compiler\AddConsoleCommandPass;
-use App\Guzzle\StackMiddlewareCompilerPass;
+use App\DependencyInjection\Compiler\StackMiddlewareCompilerPass;
 use DL\ConsulPhpEnvVar\Builder\ConsulEnvManagerBuilder;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
