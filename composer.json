@@ -23,6 +23,7 @@
         "mkraemer/react-pcntl": "^2.2",
         "php-amqplib/rabbitmq-bundle": "^1.13",
         "react/child-process": "dev-master",
+        "react/eep": "dev-master",
         "symfony/console": "^3.3",
         "symfony/expression-language": "^3.3",
         "symfony/flex": "^1.0",

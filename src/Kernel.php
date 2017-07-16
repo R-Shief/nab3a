@@ -6,6 +6,7 @@ use App\DependencyInjection\Compiler\AddConsoleCommandPass;
 use App\DependencyInjection\Compiler\AttachPluginsCompilerPass;
 use App\DependencyInjection\Compiler\StackMiddlewareCompilerPass;
 use DL\ConsulPhpEnvVar\Builder\ConsulEnvManagerBuilder;
+use React\EventLoop\LoopInterface;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
@@ -90,6 +91,7 @@ final class Kernel extends BaseKernel
     {
         $container->addCompilerPass(new StackMiddlewareCompilerPass());
         $container->addCompilerPass(new AddConsoleCommandPass('nab3a'));
+        $container->addCompilerPass(new AttachPluginsCompilerPass(EventLoop\Configurator::class, 'event_loop.plugin', LoopInterface::class), PassConfig::TYPE_BEFORE_REMOVING);
         $container->addCompilerPass(new AttachPluginsCompilerPass(Evenement\Configurator::class, 'evenement.plugin'), PassConfig::TYPE_BEFORE_REMOVING);
     }
 }

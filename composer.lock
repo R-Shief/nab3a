@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e65f49e3a8f6874fde4606452baf7435",
+    "content-hash": "c2b9af5c66a19333bda233c8d30370f4",
     "packages": [
         {
             "name": "bangpound/consul-bundle",
@@ -1033,6 +1033,45 @@
                 "process"
             ],
             "time": "2017-07-13T09:36:40+00:00"
+        },
+        {
+            "name": "react/eep",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ianbarber/eep-php.git",
+                "reference": "f551d9e168a557cf2e2dd192d7923fa47324bab7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ianbarber/eep-php/zipball/f551d9e168a557cf2e2dd192d7923fa47324bab7",
+                "reference": "f551d9e168a557cf2e2dd192d7923fa47324bab7",
+                "shasum": ""
+            },
+            "require": {
+                "evenement/evenement": "1.0 - 2.0",
+                "php": ">=5.3.2",
+                "react/event-loop": "0.2 - 0.5"
+            },
+            "require-dev": {
+                "ext-pcntl": "*",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "React\\EEP": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "description": "EEP event process for React.",
+            "keywords": [
+                "eep"
+            ],
+            "time": "2016-04-19T03:06:52+00:00"
         },
         {
             "name": "react/event-loop",
@@ -2884,7 +2923,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "bangpound/consul-bundle": 20,
-        "react/child-process": 20
+        "react/child-process": 20,
+        "react/eep": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

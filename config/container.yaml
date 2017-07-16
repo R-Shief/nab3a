@@ -151,6 +151,38 @@ services:
         tags:
             - { name: evenement.plugin, id: App\Twitter\MessageEmitter }
 
+    App\Logger\LogMessagePlugin:
+        arguments:
+            -
+                delete:           ~
+                tweet:            ~
+        calls:
+            - [ setLogger, [ '@?logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: twitter }
+            - { name: evenement.plugin, id: App\Twitter\MessageEmitter }
+        public: false
+
+    App\Stream\Eep:
+        arguments:
+            - !service
+                  class: React\EEP\Window\Periodic
+                  factory: ['@nab3a.stream.eep.periodic_factory', makeStatusCounter ]
+            - !service
+                  class: React\EEP\Window\Periodic
+                  factory: ['@nab3a.stream.eep.periodic_factory', makeStatusAverager ]
+            - !service
+                  class: React\EEP\Window\Periodic
+                  factory: ['@nab3a.stream.eep.periodic_factory', makeIdleTimeTracker ]
+        tags:
+            - { name: evenement.plugin, id: App\Twitter\MessageEmitter }
+            - { name: event_loop.plugin }
+
+    nab3a.stream.eep.periodic_factory:
+        class: App\Stream\PeriodicFactory
+        calls:
+            - [ setLogger, ['@logger']]
+
 #    service_name:
 #        class: App\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
