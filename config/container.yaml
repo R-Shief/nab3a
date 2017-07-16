@@ -167,19 +167,18 @@ services:
         arguments:
             - !service
                   class: React\EEP\Window\Periodic
-                  factory: ['@nab3a.stream.eep.periodic_factory', makeStatusCounter ]
+                  factory: ['@App\Stream\PeriodicFactory', makeStatusCounter ]
             - !service
                   class: React\EEP\Window\Periodic
-                  factory: ['@nab3a.stream.eep.periodic_factory', makeStatusAverager ]
+                  factory: ['@App\Stream\PeriodicFactory', makeStatusAverager ]
             - !service
                   class: React\EEP\Window\Periodic
-                  factory: ['@nab3a.stream.eep.periodic_factory', makeIdleTimeTracker ]
+                  factory: ['@App\Stream\PeriodicFactory', makeIdleTimeTracker ]
         tags:
             - { name: evenement.plugin, id: App\Twitter\MessageEmitter }
             - { name: event_loop.plugin }
 
-    nab3a.stream.eep.periodic_factory:
-        class: App\Stream\PeriodicFactory
+    App\Stream\PeriodicFactory:
         calls:
             - [ setLogger, ['@logger']]
 
