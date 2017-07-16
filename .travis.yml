@@ -1,0 +1,19 @@
+language: php
+
+dist: trusty
+
+cache:
+  directories:
+    - "$HOME/.composer/cache"
+
+env:
+  - APP_ENV=test APP_DEBUG=1 APP_SECRET=secret
+
+php:
+  - '7.1'
+
+before_script:
+  - travis_retry composer install ${COMPOSER_FLAGS} --no-interaction
+
+script:
+  - vendor/bin/simple-phpunit
