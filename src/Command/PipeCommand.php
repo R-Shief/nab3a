@@ -60,13 +60,13 @@ class PipeCommand extends AbstractCommand
                 $verbosity = '--quiet';
                 break;
             case OutputInterface::VERBOSITY_VERBOSE:
-                $verbosity = '--verbosity';
+                $verbosity = '--verbose';
                 break;
             case OutputInterface::VERBOSITY_VERY_VERBOSE:
-                $verbosity = '--verbosity=2';
+                $verbosity = '--verbose --verbose';
                 break;
             case OutputInterface::VERBOSITY_DEBUG:
-                $verbosity = '--verbosity=3';
+                $verbosity = '--verbose --verbose --verbose';
                 break;
             default:
                 $verbosity = '';
