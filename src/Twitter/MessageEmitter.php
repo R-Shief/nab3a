@@ -46,8 +46,10 @@ class MessageEmitter implements EventEmitterInterface
         }
 
         foreach ($this->parser->push($data) as $object) {
-            $event = $this->guesser->getEventName($object);
-            $this->emit($event, [$object]);
+            if (!empty($object)) {
+                $event = $this->guesser->getEventName($object);
+                $this->emit($event, [$object]);
+            }
         }
     }
 }
