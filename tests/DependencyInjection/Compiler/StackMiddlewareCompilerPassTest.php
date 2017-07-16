@@ -5,7 +5,6 @@ namespace App\Tests\DependencyInjection\Compiler;
 use App\DependencyInjection\Compiler\StackMiddlewareCompilerPass;
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
@@ -35,12 +34,12 @@ class StackMiddlewareCompilerPassTest extends TestCase
         $pass = new StackMiddlewareCompilerPass();
         $pass->process($container);
 
-        /** @var ChildDefinition $handlerDefinition */
+        /** @var Definition $handlerDefinition */
         $handlerDefinition = $container->getDefinition('client')->getArgument(0)['handler'];
-        assert($handlerDefinition instanceof ChildDefinition);
+        assert($handlerDefinition instanceof Definition);
 
         $this->assertTrue($container->hasDefinition('client'));
-        $this->assertInstanceOf(ChildDefinition::class, $handlerDefinition);
+        $this->assertInstanceOf(Definition::class, $handlerDefinition);
         $this->assertCount(3, $handlerDefinition->getMethodCalls());
         $this->assertTrue($handlerDefinition->hasMethodCall('push'));
         $this->assertTrue($handlerDefinition->hasMethodCall('before'));
@@ -63,12 +62,12 @@ class StackMiddlewareCompilerPassTest extends TestCase
         $pass = new StackMiddlewareCompilerPass();
         $pass->process($container);
 
-        /** @var ChildDefinition $handlerDefinition */
+        /** @var Definition $handlerDefinition */
         $handlerDefinition = $container->getDefinition('client')->getArgument(0)['handler'];
-        assert($handlerDefinition instanceof ChildDefinition);
+        assert($handlerDefinition instanceof Definition);
 
         $this->assertTrue($container->hasDefinition('client'));
-        $this->assertInstanceOf(ChildDefinition::class, $handlerDefinition);
+        $this->assertInstanceOf(Definition::class, $handlerDefinition);
         $this->assertCount(1, $handlerDefinition->getMethodCalls());
         $this->assertTrue($handlerDefinition->hasMethodCall('push'));
     }

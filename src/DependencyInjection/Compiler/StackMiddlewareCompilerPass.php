@@ -2,7 +2,7 @@
 
 namespace App\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ChildDefinition;
+use GuzzleHttp\HandlerStack;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -43,7 +43,7 @@ class StackMiddlewareCompilerPass implements CompilerPassInterface
 
             $handlerDefinition = self::hasHandlerDefinition($arguments) ? self::getHandlerDefinition($arguments) : self::newHandlerDefinition($container);
 
-            $stackDefinition = new ChildDefinition('nab3a.guzzle.handler_stack');
+            $stackDefinition = new Definition(HandlerStack::class);
             $stackDefinition->setArguments([$handlerDefinition]);
             $earlyMiddleware = array_filter($middlewares, function ($middleware) {
                 return !array_key_exists('before', $middleware) && !array_key_exists('after', $middleware);

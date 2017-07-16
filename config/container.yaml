@@ -26,7 +26,6 @@ services:
         arguments:
             - 'nab3a'
             - "@=parameter('kernel.environment') ~ (parameter('kernel.debug') ? '/debug' : '')"
-
         calls:
             - [ setDispatcher, [ '@event_dispatcher' ] ]
 
@@ -73,40 +72,12 @@ services:
         calls:
             - [ setContainer, ['@service_container'] ]
 
-    guzzle_handler:
-        class: GuzzleHttp\HandlerStack
-        factory: ['GuzzleHttp\HandlerStack', 'create']
-        calls:
-            - [ 'remove', ['http_errors']]
-            - [ 'remove', ['allow_redirects']]
-            - [ 'remove', ['cookies']]
-#            - [ 'remove', ['prepare_body']]
-
-    nab3a.guzzle.client:
-        class: GuzzleHttp\Client
-        public: false
-        arguments:
-            -
-                on_stats: [ '@App\Guzzle\Emitter', 'onStats' ]
-                on_headers: [ '@App\Guzzle\Emitter', 'onHeaders' ]
-
-    nab3a.guzzle.handler_stack:
-        class: GuzzleHttp\HandlerStack
-        public: false
-        shared: false
-
-    nab3a.guzzle.client.handler:
-        class: GuzzleHttp\HandlerStack
-        factory: ['@nab3a.guzzle.client', 'getConfig']
-        arguments: ['handler']
-
     nab3a.guzzle.middleware.log:
         class: Closure
         factory: [ GuzzleHttp\Middleware, log ]
         arguments: [ '@?logger', '@GuzzleHttp\MessageFormatter' ]
         tags:
             - { name: monolog.logger, channel: guzzle }
-            - { name: guzzle.middleware, client: nab3a.guzzle.client, middleware_name: log, after: retry }
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: log, after: retry }
         public: false
         shared: false
