@@ -34,8 +34,9 @@ class MessageEmitter implements EventEmitterInterface
 
     /**
      * @param $data
+     * @return void
      */
-    public function onData($data)
+    public function onData($data) : void
     {
         // Blank lines are a keep-alive signal.
         if ($data === "\r\n") {
