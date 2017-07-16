@@ -2,10 +2,10 @@
 
 namespace App\DependencyInjection\Compiler;
 
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Reference;
 
@@ -42,7 +42,7 @@ class StackMiddlewareCompilerPass implements CompilerPassInterface
 
             $handlerDefinition = self::hasHandlerDefinition($arguments) ? self::getHandlerDefinition($arguments) : self::newHandlerDefinition($container);
 
-            $stackDefinition = new DefinitionDecorator('nab3a.guzzle.handler_stack');
+            $stackDefinition = new ChildDefinition('nab3a.guzzle.handler_stack');
             $stackDefinition->setArguments([$handlerDefinition]);
             $earlyMiddleware = array_filter($middlewares, function ($middleware) {
                 return !array_key_exists('before', $middleware) && !array_key_exists('after', $middleware);
