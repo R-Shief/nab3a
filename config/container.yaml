@@ -182,6 +182,11 @@ services:
         calls:
             - [ setLogger, ['@logger']]
 
+    Monolog\Processor\MemoryUsageProcessor:
+        arguments: [ true, false ]
+        tags:
+            - { name: monolog.processor, handler: console }
+
 #    service_name:
 #        class: App\Directory\ClassName
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
