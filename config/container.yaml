@@ -3,6 +3,11 @@
 parameters:
 
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
     Symfony\Component\Console\Input\ArgvInput: ~
     Symfony\Component\Console\Output\ConsoleOutput: ~
     Clue\JsonStream\StreamingJsonParser:
@@ -31,8 +36,8 @@ services:
                 auth: oauth
                 decode_content: 'deflate, gzip'
                 stream: true
-                on_stats: [ '@nab3a.guzzle.emitter', 'onStats' ]
-                on_headers: [ '@nab3a.guzzle.emitter', 'onHeaders' ]
+                on_stats: [ '@App\Guzzle\Emitter', 'onStats' ]
+                on_headers: [ '@App\Guzzle\Emitter', 'onHeaders' ]
 
     nab3a.twitter.guzzle.middleware.oauth:
         class: GuzzleHttp\Subscriber\Oauth\Oauth1
@@ -45,30 +50,23 @@ services:
         tags:
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: oauth }
 
-    nab3a.guzzle.emitter:
-        class: App\Guzzle\Emitter
+    App\Guzzle\Emitter:
         calls:
             - [ setLogger, [ '@?logger']]
         tags:
             - { name: monolog.logger, channel: guzzle }
         public: false
 
-    nab3a.event_loop:
-        class: React\EventLoop\LoopInterface
+    React\EventLoop\LoopInterface:
         factory: ['React\EventLoop\Factory','create']
 
-    nab3a.pcntl:
-        class: MKraemer\ReactPCNTL\PCNTL
-        arguments:
-            - '@nab3a.event_loop'
+    MKraemer\ReactPCNTL\PCNTL: ~
 
-    nab3a.process.child_process:
-        class: App\Process\ChildProcess
-        arguments:
-            - '@nab3a.event_loop'
+    App\Process\ChildProcess: ~
 
-    nab3a.console.logger_helper:
-        class: App\Console\LoggerHelper
+    App\Twitter\MessageEmitter: ~
+
+    App\Console\LoggerHelper:
         arguments: ['@=service(''Symfony\\Component\\Console\\Output\\ConsoleOutput'').getErrorOutput()']
         calls:
             - [ setContainer, ['@service_container'] ]
@@ -87,8 +85,8 @@ services:
         public: false
         arguments:
             -
-                on_stats: [ '@nab3a.guzzle.emitter', 'onStats' ]
-                on_headers: [ '@nab3a.guzzle.emitter', 'onHeaders' ]
+                on_stats: [ '@App\Guzzle\Emitter', 'onStats' ]
+                on_headers: [ '@App\Guzzle\Emitter', 'onHeaders' ]
 
     nab3a.guzzle.handler_stack:
         class: GuzzleHttp\HandlerStack
@@ -103,7 +101,7 @@ services:
     nab3a.guzzle.middleware.log:
         class: Closure
         factory: [ GuzzleHttp\Middleware, log ]
-        arguments: [ '@?logger', '@nab3a.guzzle.middleware.log.formatter' ]
+        arguments: [ '@?logger', '@GuzzleHttp\MessageFormatter' ]
         tags:
             - { name: monolog.logger, channel: guzzle }
             - { name: guzzle.middleware, client: nab3a.guzzle.client, middleware_name: log, after: retry }
@@ -111,8 +109,7 @@ services:
         public: false
         shared: false
 
-    nab3a.guzzle.middleware.log.formatter:
-        class: GuzzleHttp\MessageFormatter
+    GuzzleHttp\MessageFormatter:
         arguments: [ '@=constant(''GuzzleHttp\\MessageFormatter::CLF'')' ]
         public: false
 
@@ -130,18 +127,15 @@ services:
         tags:
             - { name: guzzle.middleware, client: nab3a.twitter.guzzle.client, middleware_name: retry }
 
-    nab3a.logger.handler:
-        class: Symfony\Bridge\Monolog\Handler\ConsoleHandler
+    Symfony\Bridge\Monolog\Handler\ConsoleHandler:
         calls:
-            - [ setFormatter, [ '@=service(''Symfony\\Component\\Console\\Input\\ArgvInput'').hasParameterOption(''--child'') ? service(''nab3a.logger.formatter.json'') : service(''nab3a.logger.formatter.console'')'] ]
+            - [ setFormatter, [ '@=service(''Symfony\\Component\\Console\\Input\\ArgvInput'').hasParameterOption(''--child'') ? service(''Monolog\\Formatter\\LogglyFormatter'') : service(''Symfony\\Bridge\\Monolog\\Formatter\\ConsoleFormatter'')'] ]
         tags:
             - { name: kernel.event_subscriber }
 
-    nab3a.logger.formatter.console:
-        class: Symfony\Bridge\Monolog\Formatter\ConsoleFormatter
+    Symfony\Bridge\Monolog\Formatter\ConsoleFormatter: ~
 
-    nab3a.logger.formatter.json:
-        class: Monolog\Formatter\LogglyFormatter
+    Monolog\Formatter\LogglyFormatter:
         arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
         public: true
 

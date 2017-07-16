@@ -22,10 +22,10 @@ class LoggerHelper extends WritableStream
      */
     private $parser;
 
-    public function __construct(OutputInterface $output)
+    public function __construct(OutputInterface $output, StreamingJsonParser $parser)
     {
         $this->output = $output;
-        $this->parser = new StreamingJsonParser();
+        $this->parser = $parser;
     }
 
     public function write($chunk)

@@ -2,8 +2,10 @@
 
 namespace App\Command;
 
+use App\Console\LoggerHelper;
 use App\Twitter\MessageEmitter;
 use React\ChildProcess\Process;
+use React\EventLoop\LoopInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,8 +39,8 @@ class PipeCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $loop = $this->container->get('nab3a.event_loop');
-        $pcntl = $this->container->get('nab3a.pcntl');
+        $loop = $this->container->get(\React\EventLoop\LoopInterface::class);
+        $pcntl = $this->container->get(\MKraemer\ReactPCNTL\PCNTL::class);
 
         // @todo
 
@@ -73,12 +75,12 @@ class PipeCommand extends AbstractCommand
         }
 
         $process = $this->container
-          ->get('nab3a.process.child_process')
+          ->get(\App\Process\ChildProcess::class)
           ->makeChildProcess('stream:read:twitter '.$input->getArgument('request').' '.$verbosity);
 
         $this->attachListeners($process);
 
-        $process->stderr->pipe($this->container->get('nab3a.console.logger_helper'));
+        $process->stderr->pipe($this->container->get(LoggerHelper::class));
         $process->stdout->pipe($this->container->get(MessageEmitter::class));
         $process->on('exit', function ($exitCode, $termSignal) use ($loop, $process) {
             $this->container->get('logger')->info(sprintf('child process pid %d exited with code %d signal %s', $process->getPid(), $exitCode, $termSignal));
@@ -111,7 +113,7 @@ class PipeCommand extends AbstractCommand
                 $process->terminate();
                 usleep(self::CHILD_PROC_TIMER * 1e6);
             }
-            $this->container->get('nab3a.event_loop')->stop();
+            $this->container->get(LoopInterface::class)->stop();
         };
         $dispatcher->addListener(ConsoleEvents::EXCEPTION, $listener);
         $dispatcher->addListener(ConsoleEvents::TERMINATE, $listener);
