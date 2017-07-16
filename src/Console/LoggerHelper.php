@@ -3,14 +3,16 @@
 namespace App\Console;
 
 use Clue\JsonStream\StreamingJsonParser;
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
 use Psr\Log\LoggerInterface;
-use React\Stream\WritableStream;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
-class LoggerHelper extends WritableStream
+class LoggerHelper implements EventEmitterInterface
 {
     use ContainerAwareTrait;
+    use EventEmitterTrait;
 
     /**
      * @var OutputInterface
@@ -28,7 +30,7 @@ class LoggerHelper extends WritableStream
         $this->parser = $parser;
     }
 
-    public function write($chunk)
+    public function onData($chunk)
     {
         try {
             foreach ($this->parser->push($chunk) as $data) {

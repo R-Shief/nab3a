@@ -22,7 +22,7 @@
         "guzzlehttp/oauth-subscriber": "^0.3.0",
         "mkraemer/react-pcntl": "^2.2",
         "php-amqplib/rabbitmq-bundle": "^1.13",
-        "react/child-process": "^0.4.3",
+        "react/child-process": "dev-master",
         "symfony/console": "^3.3",
         "symfony/expression-language": "^3.3",
         "symfony/flex": "^1.0",
@@ -46,6 +46,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "php-cs-fixer": [
+            "php-cs-fixer fix --rules=@PSR1,@PSR2,no_unused_imports -- src/",
+            "php-cs-fixer fix --rules=@PSR1,@PSR2,no_unused_imports -- tests/"
         ]
     },
     "config": {

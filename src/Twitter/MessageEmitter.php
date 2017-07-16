@@ -3,7 +3,8 @@
 namespace App\Twitter;
 
 use Clue\JsonStream\StreamingJsonParser;
-use React\Stream\WritableStream;
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
 
 /**
  * Class MessageEmitter.
@@ -11,8 +12,10 @@ use React\Stream\WritableStream;
  * This writable stream emits different types of messages from Twitter
  * Streaming API.
  */
-class MessageEmitter extends WritableStream
+class MessageEmitter implements EventEmitterInterface
 {
+    use EventEmitterTrait;
+
     /**
      * @var TypeGuesser
      */
@@ -32,7 +35,7 @@ class MessageEmitter extends WritableStream
     /**
      * @param $data
      */
-    public function write($data)
+    public function onData($data)
     {
         // Blank lines are a keep-alive signal.
         if ($data === "\r\n") {

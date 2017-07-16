@@ -80,8 +80,8 @@ class PipeCommand extends AbstractCommand
 
         $this->attachListeners($process);
 
-        $process->stderr->pipe($this->container->get(LoggerHelper::class));
-        $process->stdout->pipe($this->container->get(MessageEmitter::class));
+        $process->stderr->on('data', [$this->container->get(LoggerHelper::class), 'onData']);
+        $process->stdout->on('data', [$this->container->get(MessageEmitter::class), 'onData']);
         $process->on('exit', function ($exitCode, $termSignal) use ($loop, $process) {
             $this->container->get('logger')->info(sprintf('child process pid %d exited with code %d signal %s', $process->getPid(), $exitCode, $termSignal));
             $loop->stop();
