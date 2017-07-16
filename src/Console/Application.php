@@ -2,12 +2,16 @@
 
 namespace App\Console;
 
-use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputOption;
 
 class Application extends \Symfony\Component\Console\Application
 {
-    protected function getDefaultInputDefinition()
+    /**
+     * @return InputDefinition
+     * @suppress PhanTypeMismatchArgument
+     */
+    protected function getDefaultInputDefinition(): InputDefinition
     {
         $definition = parent::getDefaultInputDefinition();
         $definition->addOption(new InputOption('--child', null, InputOption::VALUE_NONE, 'Run as child process'));

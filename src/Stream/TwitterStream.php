@@ -15,8 +15,9 @@ class TwitterStream
      *
      * @return string
      * @throws \RuntimeException
+     * @suppress PhanTypeMismatchArgument
      */
-    public static function handleData(StreamInterface $stream, $maxLength = null)
+    public static function handleData(StreamInterface $stream, $maxLength = null): string
     {
         do {
             $data = Psr7\readline($stream, $maxLength);

@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
@@ -32,7 +33,10 @@ final class Kernel extends BaseKernel
         return dirname(__DIR__).'/var/logs';
     }
 
-    public function registerBundles(): iterable
+    /**
+     * @return iterable|BundleInterface[]|\Generator
+     */
+    public function registerBundles()
     {
         $contents = require dirname(__DIR__).'/config/bundles.php';
         foreach ($contents as $class => $envs) {

@@ -4,7 +4,6 @@ namespace App\Process;
 
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
-use Symfony\Component\Process\ProcessUtils;
 
 class ChildProcess
 {
@@ -26,7 +25,7 @@ class ChildProcess
     /**
      * @param string $cmd Command line to run
      * @param string $cwd Current working directory or null to inherit
-     * @param array $env Environment variables or null to inherit
+     * @param array|null $env Environment variables or null to inherit
      * @param array $options Options for proc_open()
      *
      * @return Process
@@ -34,11 +33,38 @@ class ChildProcess
      */
     public function makeChildProcess($cmd, $cwd = null, array $env = null, array $options = array())
     {
-        $cmd = 'exec php '.ProcessUtils::escapeArgument($_SERVER['argv'][0]).' --child '.$cmd;
+        $cmd = 'exec php '.static::escapeArgument($_SERVER['argv'][0]).' --child '.$cmd;
 
         $process = new Process($cmd, $cwd, $env, $options);
         $process->start($this->loop);
 
         return $process;
+    }
+
+    /**
+     * Escapes a string to be used as a shell argument.
+     *
+     * @param string $argument The argument that will be escaped
+     *
+     * @return string The escaped argument
+     * @see \Symfony\Component\Process\Process::escapeArgument
+     */
+    private static function escapeArgument($argument)
+    {
+        if ('\\' !== DIRECTORY_SEPARATOR) {
+            return "'".str_replace("'", "'\\''", $argument)."'";
+        }
+        if ('' === $argument = (string) $argument) {
+            return '""';
+        }
+        if (false !== strpos($argument, "\0")) {
+            $argument = str_replace("\0", '?', $argument);
+        }
+        if (!preg_match('/[\/()%!^"<>&|\s]/', $argument)) {
+            return $argument;
+        }
+        $argument = preg_replace('/(\\\\+)$/', '$1$1', $argument);
+
+        return '"'.str_replace(array('"', '^', '%', '!', "\n"), array('""', '"^^"', '"^%"', '"^!"', '!LF!'), $argument).'"';
     }
 }

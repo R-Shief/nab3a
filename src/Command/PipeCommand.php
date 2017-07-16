@@ -111,7 +111,7 @@ class PipeCommand extends AbstractCommand
         $listener = function () use ($process) {
             if ($process->isRunning()) {
                 $process->terminate();
-                usleep(self::CHILD_PROC_TIMER * 1e6);
+                usleep((int) (self::CHILD_PROC_TIMER * 1e6));
             }
             $this->container->get(LoopInterface::class)->stop();
         };
