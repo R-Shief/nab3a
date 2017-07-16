@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class RetryMiddleware
 {
@@ -19,6 +20,11 @@ class RetryMiddleware
         $this->nextHandler = $nextHandler;
     }
 
+    /**
+     * @param RequestInterface $request
+     * @param array $options
+     * @return ResponseInterface
+     */
     public function __invoke(RequestInterface $request, array $options)
     {
         $prev = $this->nextHandler;
@@ -30,55 +36,102 @@ class RetryMiddleware
         return $prev($request, $options);
     }
 
-    public static function retry()
+    /**
+     * @return callable|\Closure
+     */
+    public static function retry(): callable
     {
         return function (callable $handler) {
-            return new RetryMiddleware($handler);
+            return new static($handler);
         };
     }
 
-    private static function retryMiddlewares()
+    /**
+     * @return array
+     */
+    private static function retryMiddlewares(): array
     {
         return array(
-          [Middleware::retry(self::connectExceptionDecider(), self::linearDelay(250, 16000)), 'connect_error'],
-          [Middleware::retry(self::httpErrorDecider(), self::exponentialDelay(5000, 320000)), 'http_error'],
-          [Middleware::retry(self::rateLimitErrorDecider(), self::exponentialDelay(60000)), 'rate_limit'],
+            [
+                Middleware::retry(
+                    self::connectExceptionDecider(),
+                    self::linearDelay(250, 16000)
+                ),
+                'connect_error'
+            ],
+            [
+                Middleware::retry(
+                    self::httpErrorDecider(),
+                    self::exponentialDelay(5000, 320000)
+                ),
+                'http_error'
+            ],
+            [
+                Middleware::retry(
+                    self::rateLimitErrorDecider(),
+                    self::exponentialDelay(60000)
+                ),
+                'rate_limit'
+            ],
         );
     }
 
-    public static function connectExceptionDecider()
+    /**
+     * @return callable
+     */
+    public static function connectExceptionDecider(): callable
     {
-        return function ($retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
-            return ! (bool) $response || $error instanceof ConnectException;
+        return function (int $retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
+            return !(bool)$response || $error instanceof ConnectException;
         };
     }
 
-    public static function rateLimitErrorDecider()
+    /**
+     * @return callable
+     */
+    public static function rateLimitErrorDecider(): callable
     {
-        return function ($retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
+        return function (int $retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
             return $response && $response->getStatusCode() === 420;
         };
     }
 
-    public static function httpErrorDecider()
+    /**
+     * @return callable
+     */
+    public static function httpErrorDecider(): callable
     {
-        return function ($retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
+        return function (int $retries, Psr7\Request $request, Psr7\Response $response = null, $error = null) {
             return $response && $response->getStatusCode() >= 400;
         };
     }
 
-    public static function exponentialDelay($base, $maxDelay = 0)
+    /**
+     * @param $base
+     * @param int $maxDelay
+     * @return callable
+     */
+    public static function exponentialDelay(int $base, int $maxDelay = 0): callable
     {
-        return function ($retries) use ($base, $maxDelay) {
+        return function (int $retries) use ($base, $maxDelay) {
             $delay = \GuzzleHttp\RetryMiddleware::exponentialDelay($retries) * $base;
 
             return $maxDelay ? min($delay, $maxDelay) : $delay;
         };
     }
 
-    public static function linearDelay($base, $maxDelay = 0)
+    /**
+     * @param $base
+     * @param int $maxDelay
+     * @return callable
+     */
+    public static function linearDelay(int $base, int $maxDelay = 0): callable
     {
-        return function ($retries) use ($base, $maxDelay) {
+        /**
+         * @param $retries
+         * @return int
+         */
+        return function (int $retries) use ($base, $maxDelay) {
             $delay = $retries * $base;
 
             return $maxDelay ? min($delay, $maxDelay) : $delay;
