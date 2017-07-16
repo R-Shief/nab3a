@@ -41,7 +41,7 @@ services:
                 on_stats: [ '@App\Guzzle\Emitter', 'onStats' ]
                 on_headers: [ '@App\Guzzle\Emitter', 'onHeaders' ]
 
-    nab3a.twitter.guzzle.middleware.oauth:
+    GuzzleHttp\Subscriber\Oauth\Oauth1:
         class: GuzzleHttp\Subscriber\Oauth\Oauth1
         arguments:
             -
@@ -141,7 +141,7 @@ services:
         arguments: ['@=constant(''Monolog\\Formatter\\JsonFormatter::BATCH_MODE_NEWLINES'')', true]
         public: true
 
-    nab3a.twitter.message_emitter.plugin.rabbitmq:
+    App\RabbitMq\EnqueueTweetPlugin:
         class: App\RabbitMq\EnqueueTweetPlugin
         arguments:
             - '@old_sound_rabbit_mq.twitter_producer'

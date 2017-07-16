@@ -51,7 +51,7 @@ class Eep implements Evenement\PluginInterface, EventLoop\PluginInterface
     /**
      * @param LoopInterface $loop
      */
-    public function attach(LoopInterface $loop)
+    public function attach(LoopInterface $loop):void
     {
         $loop->addPeriodicTimer(.5, [$this, 'ticker']);
     }

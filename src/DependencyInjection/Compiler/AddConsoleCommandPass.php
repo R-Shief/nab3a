@@ -7,6 +7,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Class AddConsoleCommandPass.
@@ -57,7 +58,7 @@ class AddConsoleCommandPass implements CompilerPassInterface
             }
 
             $class = $container->getParameterBag()->resolveValue($definition->getClass());
-            if (!is_subclass_of($class, 'Symfony\\Component\\Console\\Command\\Command')) {
+            if (!is_subclass_of($class, Command::class)) {
                 throw new InvalidArgumentException(sprintf('The service "%s" tagged "%s.console.command" must be a subclass of "Symfony\\Component\\Console\\Command\\Command".', $id, $this->namePrefix));
             }
 
