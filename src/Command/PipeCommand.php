@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Twitter\MessageEmitter;
 use React\ChildProcess\Process;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
@@ -78,7 +79,7 @@ class PipeCommand extends AbstractCommand
         $this->attachListeners($process);
 
         $process->stderr->pipe($this->container->get('nab3a.console.logger_helper'));
-        $process->stdout->pipe($this->container->get('nab3a.twitter.message_emitter'));
+        $process->stdout->pipe($this->container->get(MessageEmitter::class));
         $process->on('exit', function ($exitCode, $termSignal) use ($loop, $process) {
             $this->container->get('logger')->info(sprintf('child process pid %d exited with code %d signal %s', $process->getPid(), $exitCode, $termSignal));
             $loop->stop();

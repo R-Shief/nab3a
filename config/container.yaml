@@ -3,6 +3,9 @@
 parameters:
 
 services:
+    Clue\JsonStream\StreamingJsonParser:
+        shared: false
+
     App\Command\:
         resource: '../src/Command/{PipeCommand.php,ReadStreamCommand.php}'
         calls:
@@ -74,14 +77,6 @@ services:
         arguments: ['@=service(''console.output'').getErrorOutput()']
         calls:
             - [ setContainer, ['@service_container'] ]
-
-    nab3a.twitter.message_emitter:
-        class: App\Twitter\MessageEmitter
-        arguments: ['@nab3a.twitter.type_guesser']
-
-    nab3a.twitter.type_guesser:
-        class: App\Twitter\TypeGuesser
-        public: false
 
     guzzle_handler:
         class: GuzzleHttp\HandlerStack

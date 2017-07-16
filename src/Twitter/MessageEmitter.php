@@ -23,10 +23,10 @@ class MessageEmitter extends WritableStream
      */
     private $parser;
 
-    public function __construct(TypeGuesser $guesser)
+    public function __construct(TypeGuesser $guesser, StreamingJsonParser $parser)
     {
         $this->guesser = $guesser;
-        $this->parser = new StreamingJsonParser();
+        $this->parser = $parser;
     }
 
     /**
