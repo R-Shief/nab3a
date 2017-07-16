@@ -17,6 +17,7 @@ use Symfony\Component\Routing\RouteCollectionBuilder;
 
 /**
  * @author Fabien Potencier <fabien@symfony.com>
+ * @codeCoverageIgnore
  */
 final class Kernel extends BaseKernel
 {
