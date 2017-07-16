@@ -21,6 +21,7 @@
         "dlapps/consul-php-envvar": "^1.1",
         "guzzlehttp/oauth-subscriber": "^0.3.0",
         "mkraemer/react-pcntl": "^2.2",
+        "php-amqplib/rabbitmq-bundle": "^1.13",
         "react/child-process": "^0.4.3",
         "symfony/console": "^3.3",
         "symfony/expression-language": "^3.3",
@@ -60,7 +61,7 @@
     "extra": {
         "symfony": {
             "id": "01BN4T6HMZMJK31JT7SWS8N7MK",
-            "allow-contrib": false
+            "allow-contrib": "true"
         },
         "branch-alias": {
             "dev-master": "1.0.x-dev"
