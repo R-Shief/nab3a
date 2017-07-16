@@ -185,7 +185,7 @@ services:
     Monolog\Processor\MemoryUsageProcessor:
         arguments: [ true, false ]
         tags:
-            - { name: monolog.processor, handler: console }
+            - { name: monolog.processor }
 
 #    service_name:
 #        class: App\Directory\ClassName
