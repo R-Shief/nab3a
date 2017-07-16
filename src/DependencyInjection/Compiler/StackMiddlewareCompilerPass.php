@@ -18,6 +18,7 @@ class StackMiddlewareCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        assert(!$container->isCompiled());
         $serviceIds = $container->findTaggedServiceIds('guzzle.middleware');
         $stacks = [];
         /**
@@ -50,6 +51,7 @@ class StackMiddlewareCompilerPass implements CompilerPassInterface
             $lateMiddleware = array_diff_key($middlewares, $earlyMiddleware);
             foreach ($earlyMiddleware + $lateMiddleware as $middleware) {
                 $method = $middleware['method'];
+                assert(!empty($method));
                 $stackArguments = [
                   new Reference($middleware['service']),
                   $middleware['middleware_name'],
@@ -79,7 +81,7 @@ class StackMiddlewareCompilerPass implements CompilerPassInterface
      *
      * @return Definition
      */
-    private static function getHandlerDefinition(array $arguments = [[]])
+    private static function getHandlerDefinition(array $arguments = [[]]): Definition
     {
         return $arguments[0]['handler'];
     }

@@ -31,7 +31,7 @@ class ChildProcess
      * @return Process
      * @throws \RuntimeException
      */
-    public function makeChildProcess($cmd, $cwd = null, array $env = null, array $options = array())
+    public function makeChildProcess($cmd, $cwd = null, array $env = null, array $options = array()): Process
     {
         $cmd = 'exec php '.static::escapeArgument($_SERVER['argv'][0]).' --child '.$cmd;
 
@@ -49,7 +49,7 @@ class ChildProcess
      * @return string The escaped argument
      * @see \Symfony\Component\Process\Process::escapeArgument
      */
-    private static function escapeArgument($argument)
+    private static function escapeArgument($argument): string
     {
         if ('\\' !== DIRECTORY_SEPARATOR) {
             return "'".str_replace("'", "'\\''", $argument)."'";

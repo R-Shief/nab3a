@@ -3,9 +3,12 @@
 namespace App\Command;
 
 use App\Console\LoggerHelper;
+use App\Process\ChildProcess;
 use App\Twitter\MessageEmitter;
+use MKraemer\ReactPCNTL\PCNTL;
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
+use React\Stream\ReadableStreamInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,8 +42,8 @@ class PipeCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $loop = $this->container->get(\React\EventLoop\LoopInterface::class);
-        $pcntl = $this->container->get(\MKraemer\ReactPCNTL\PCNTL::class);
+        $loop = $this->container->get(LoopInterface::class);
+        $pcntl = $this->container->get(PCNTL::class);
 
         // @todo
 
@@ -75,8 +78,12 @@ class PipeCommand extends AbstractCommand
         }
 
         $process = $this->container
-          ->get(\App\Process\ChildProcess::class)
+          ->get(ChildProcess::class)
           ->makeChildProcess('stream:read:twitter '.$input->getArgument('request').' '.$verbosity);
+
+        assert($process instanceof Process);
+        assert($process->stderr instanceof ReadableStreamInterface);
+        assert($process->stdout instanceof ReadableStreamInterface);
 
         $this->attachListeners($process);
 
@@ -115,7 +122,7 @@ class PipeCommand extends AbstractCommand
             }
             $this->container->get(LoopInterface::class)->stop();
         };
-        $dispatcher->addListener(ConsoleEvents::EXCEPTION, $listener);
+        $dispatcher->addListener(ConsoleEvents::ERROR, $listener);
         $dispatcher->addListener(ConsoleEvents::TERMINATE, $listener);
         register_shutdown_function($listener);
     }

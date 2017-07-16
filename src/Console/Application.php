@@ -9,6 +9,8 @@ class Application extends \Symfony\Component\Console\Application
 {
     /**
      * @return InputDefinition
+     * @throws \Symfony\Component\Console\Exception\InvalidArgumentException
+     * @throws \Symfony\Component\Console\Exception\LogicException
      * @suppress PhanTypeMismatchArgument
      */
     protected function getDefaultInputDefinition(): InputDefinition
