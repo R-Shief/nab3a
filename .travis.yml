@@ -7,7 +7,11 @@ cache:
     - "$HOME/.composer/cache"
 
 env:
-  - APP_ENV=test APP_DEBUG=1 APP_SECRET=secret
+  global:
+    - APP_ENV=test
+    - APP_DEBUG=1
+    - APP_SECRET=secret
+    - CI_BUILD_NUMBER="$TRAVIS_BUILD_NUMBER"
 
 php:
   - '7.1'
@@ -17,3 +21,6 @@ before_script:
 
 script:
   - vendor/bin/simple-phpunit
+
+after_success:
+  - vendor/bin/coveralls

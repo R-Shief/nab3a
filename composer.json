@@ -33,6 +33,7 @@
         "symfony/yaml": "^3.3"
     },
     "require-dev": {
+        "satooshi/php-coveralls": "^2.0@dev",
         "symfony/debug-bundle": "^3.3",
         "symfony/dotenv": "^3.3",
         "symfony/phpunit-bridge": "^3.3"
