@@ -7,24 +7,32 @@ namespace App\Twitter;
  */
 class TypeGuesser
 {
+    const TYPE_UNKNOWN = 'unknown';
+
     /**
-     * @param $data array single Twitter streaming message
+     * @param $data array[] single Twitter streaming message
      *
      * @return string message type
      */
-    public function getEventName(array $data)
+    public function getEventName(array $data): string
     {
         // Twitter public stream messages that decode as objects with only
         // one property are events of that type. Events may also be objects
         // with multiple properties including an `event` property. Other
         // message objects many properties are a standard Tweet payload.
         // @see <https://dev.twitter.com/streaming/overview/messages-types>
-        if (isset($data['event'])) {
-            $event = count($data) > 1 ? $data['event'] : key($data);
-        } else {
-            $event = count($data) > 1 ? 'tweet' : key($data);
+        if (count($data) === 1) {
+            return key($data);
         }
 
-        return $event;
+        if (isset($data['event'])) {
+            return $data['event'];
+        }
+
+        if (count($data) > 1) {
+            return 'tweet';
+        }
+
+        return self::TYPE_UNKNOWN;
     }
 }

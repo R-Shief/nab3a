@@ -17,4 +17,13 @@
             <directory>tests/</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./src</directory>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-html" target="build/coverage"/>
+        <log type="junit" target="build/junit.xml"/>
+    </logging>
 </phpunit>
