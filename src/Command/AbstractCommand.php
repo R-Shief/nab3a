@@ -5,6 +5,7 @@ namespace App\Command;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerAwareTrait;
+use SensioLabs\Consul\Services\KVInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +24,17 @@ abstract class AbstractCommand extends Command
      */
     protected $request;
 
+    /**
+     * @var KVInterface
+     */
+    private $kv;
+
+    public function __construct(KVInterface $kv, $name = null)
+    {
+        parent::__construct($name);
+        $this->kv = $kv;
+    }
+
     protected function configure()
     {
         $this->addArgument('request', InputArgument::REQUIRED, 'request key');
@@ -35,10 +47,8 @@ abstract class AbstractCommand extends Command
             return;
         }
 
-        $kv = $this->container->get('consul.kv');
-
         // Using raw=true means we get the object without base64 encoding.
-        $result = $kv->get($request, array('raw' => true));
+        $result = $this->kv->get($request, array('raw' => true));
         $response = $result->json();
 
         $this->request = new Request($response['method'], $response['uri'], $response['headers'], $response['body'], $response['version']);
